@@ -7,12 +7,10 @@
   <meta name="description" content="Professional Enterprise Sales and CRM Dashboard for SaaS growth.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236366f1%22 stroke-width=%222.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3%22/></svg>">
   
-  <!-- Google Fonts (সঠিক করা) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Tailwind CSS (সঠিক CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
   
   <script>
@@ -49,13 +47,11 @@
     ::-webkit-scrollbar-track { background: #030307; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
     .transition-all { transition: all 0.3s ease; }
-    .sidebar-transition { transition: transform 0.3s ease-in-out; }
   </style>
 </head>
 <body class="bg-[#030307] text-slate-100 antialiased font-sans overflow-x-hidden">
   <div id="root"></div>
 
-  <!-- React, ReactDOM, Babel (সঠিক CDN URLs) -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -69,42 +65,49 @@
       { id: "ORD-9283", customer: "Alex Vance", segment: "SMB", amount: "$4,200", date: "May 14, 2024", method: "Credit Card", status: "Delivered", category: "Retail" },
       { id: "ORD-9284", customer: "Metro Trading Corp", segment: "Enterprise", amount: "$31,000", date: "May 13, 2024", method: "Wire Transfer", status: "Cancelled", category: "Software" },
       { id: "ORD-9285", customer: "Apex Solutions", segment: "Mid-Market", amount: "$6,800", date: "May 12, 2024", method: "Stripe", status: "Delivered", category: "Software" },
-      { id: "ORD-9286", customer: "Nexus Hardware", segment: "SMB", amount: "$3,100", date: "May 11, 2024", method: "PayPal", status: "On Way", category: "Laptops" }
+      { id: "ORD-9286", customer: "Nexus Hardware", segment: "SMB", amount: "$3,100", date: "May 11, 2024", method: "PayPal", status: "On Way", category: "Laptops" },
+      { id: "ORD-9287", customer: "CloudTech Inc", segment: "Enterprise", amount: "$45,000", date: "May 10, 2024", method: "Wire Transfer", status: "Delivered", category: "Software" },
+      { id: "ORD-9288", customer: "Digital Solutions", segment: "Mid-Market", amount: "$9,200", date: "May 09, 2024", method: "Stripe", status: "On Way", category: "Consultancy" }
     ];
 
-    const monthlySales = [
-      { month: "Jan", val: 45 }, { month: "Feb", val: 58 }, { month: "Mar", val: 72 },
-      { month: "Apr", val: 65 }, { month: "May", val: 88 }, { month: "Jun", val: 95 }
+    const pipelineStages = [
+      { stage: "Prospecting", deals: 24, value: "$480K", color: "bg-blue-500/20 text-blue-400" },
+      { stage: "Qualification", deals: 18, value: "$360K", color: "bg-cyan-500/20 text-cyan-400" },
+      { stage: "Proposal", deals: 12, value: "$300K", color: "bg-purple-500/20 text-purple-400" },
+      { stage: "Negotiation", deals: 8, value: "$240K", color: "bg-pink-500/20 text-pink-400" },
+      { stage: "Closed Won", deals: 6, value: "$150K", color: "bg-emerald-500/20 text-emerald-400" }
     ];
 
     const invoicesData = [
       { id: "INV-2024-001", client: "Kris Payer", due: "May 20, 2024", amount: "$12,500", method: "Stripe", status: "Paid" },
       { id: "INV-2024-002", client: "Sarah Connor", due: "May 25, 2024", amount: "$8,540", method: "Wire Transfer", status: "Overdue" },
-      { id: "INV-2024-003", client: "Alex Vance", due: "May 18, 2024", amount: "$4,200", method: "Credit Card", status: "Paid" }
+      { id: "INV-2024-003", client: "Alex Vance", due: "May 18, 2024", amount: "$4,200", method: "Credit Card", status: "Paid" },
+      { id: "INV-2024-004", client: "Metro Trading", due: "May 30, 2024", amount: "$31,000", method: "Wire Transfer", status: "Pending" },
+      { id: "INV-2024-005", client: "Apex Solutions", due: "June 05, 2024", amount: "$6,800", method: "Stripe", status: "Paid" }
     ];
 
-    const NeonButton = ({ children, onClick, className = "" }) => (
-      <button onClick={onClick} className={`px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition-all ${className}`}>
-        {children}
-      </button>
-    );
+    const subscriptionPlans = [
+      { id: 1, name: "Starter", price: "$29", users: "Up to 5", features: ["Basic CRM", "Email Sync", "Reports"], subscribers: 124, mrr: "$3,596" },
+      { id: 2, name: "Professional", price: "$79", users: "Up to 25", features: ["Advanced CRM", "API Access", "Custom Reports", "Integrations"], subscribers: 287, mrr: "$22,673" },
+      { id: 3, name: "Enterprise", price: "Custom", users: "Unlimited", features: ["Full Suite", "Dedicated Support", "Custom Development"], subscribers: 45, mrr: "$67,500" }
+    ];
 
     const StatusBadge = ({ status }) => {
       const base = "px-2.5 py-1 rounded-full text-xs font-medium border";
       if (status === "Delivered" || status === "Paid") return <span className={`${base} bg-emerald-500/10 text-emerald-400 border-emerald-500/20`}>{status}</span>;
-      if (status === "On Way") return <span className={`${base} bg-amber-500/10 text-amber-400 border-amber-500/20`}>{status}</span>;
+      if (status === "On Way" || status === "Pending") return <span className={`${base} bg-amber-500/10 text-amber-400 border-amber-500/20`}>{status}</span>;
       if (status === "Cancelled" || status === "Overdue") return <span className={`${base} bg-rose-500/10 text-rose-400 border-rose-500/20`}>{status}</span>;
       return <span className={base}>{status}</span>;
     };
 
     const SidebarContent = ({ activeTab, setActiveTab, onClose }) => {
       const navItems = [
-        { id: 'Dashboard', label: 'Dashboard' },
-        { id: 'CRM Pipeline', label: 'CRM Pipeline' },
-        { id: 'Order List', label: 'Order List' },
-        { id: 'Invoices', label: 'Invoices' },
-        { id: 'Subscriptions', label: 'Subscriptions' },
-        { id: 'Settings', label: 'Settings' }
+        { id: 'Dashboard', label: 'Dashboard', icon: '📊' },
+        { id: 'CRM Pipeline', label: 'CRM Pipeline', icon: '🔄' },
+        { id: 'Order List', label: 'Order List', icon: '📋' },
+        { id: 'Invoices', label: 'Invoices', icon: '💰' },
+        { id: 'Subscriptions', label: 'Subscriptions', icon: '📦' },
+        { id: 'Settings', label: 'Settings', icon: '⚙️' }
       ];
       return (
         <div className="flex flex-col h-full bg-[#030307] text-white">
@@ -124,15 +127,16 @@
               <button
                 key={item.id}
                 onClick={() => { setActiveTab(item.id); if(onClose) onClose(); }}
-                className={`flex items-center w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === item.id ? 'bg-gradient-to-r from-[rgba(0,243,255,0.15)] to-[rgba(176,38,255,0.15)] text-white border border-white/10' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
+                className={`flex items-center w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === item.id ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
               >
+                <span className="mr-3 text-lg">{item.icon}</span>
                 {item.label}
               </button>
             ))}
           </nav>
           <div className="p-4 border-t border-glass-border">
             <button className="flex items-center w-full px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition-all">
-              <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+              <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v2m-6-11V9m0 0V7m0 2V5m0 2v2m0 0V7m0 2v2" /></svg>
               Logout
             </button>
           </div>
@@ -140,35 +144,29 @@
       );
     };
 
-    const DashboardView = ({ tooltip, setTooltip }) => (
+    const DashboardView = () => (
       <div className="space-y-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div className="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-indigo-500/50 transition-all">
+          <div className="glass-card rounded-2xl p-6 shadow-xl hover:border-indigo-500/50 transition-all">
             <div className="flex justify-between items-start">
               <div><p className="text-xs uppercase tracking-wider font-semibold text-slate-400">MRR</p><h3 className="text-2xl font-bold text-white mt-1.5">$99,560</h3></div>
               <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">+2.6%</span>
             </div>
             <p className="text-xs text-slate-400 mt-4">vs last month</p>
           </div>
-          <div className="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-indigo-500/50 transition-all">
+          <div className="glass-card rounded-2xl p-6 shadow-xl hover:border-indigo-500/50 transition-all">
             <div className="flex justify-between items-start">
               <div><p className="text-xs uppercase tracking-wider font-semibold text-slate-400">ARR</p><h3 className="text-2xl font-bold text-white mt-1.5">$1.2M</h3></div>
-              <div className="w-16 h-8 flex items-end">
-                <svg className="w-full h-full text-indigo-400" viewBox="0 0 60 25" fill="none"><path d="M2 22 Q 15 10, 30 15 T 58 3" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
-              </div>
             </div>
             <p className="text-xs text-slate-400 mt-4">Annualized Run Rate</p>
           </div>
-          <div className="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-indigo-500/50 transition-all">
+          <div className="glass-card rounded-2xl p-6 shadow-xl hover:border-indigo-500/50 transition-all">
             <div className="flex justify-between items-start">
               <div><p className="text-xs uppercase tracking-wider font-semibold text-slate-400">Active Customers</p><h3 className="text-2xl font-bold text-white mt-1.5">45,600</h3></div>
-              <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM15 20H9" /></svg>
-              </div>
             </div>
             <p className="text-xs text-slate-400 mt-4">Total customer base</p>
           </div>
-          <div className="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-indigo-500/50 transition-all">
+          <div className="glass-card rounded-2xl p-6 shadow-xl hover:border-indigo-500/50 transition-all">
             <div className="flex justify-between items-start">
               <div><p className="text-xs uppercase tracking-wider font-semibold text-slate-400">Conversion Rate</p><h3 className="text-2xl font-bold text-white mt-1.5">24.5%</h3></div>
               <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">+1.2%</span>
@@ -232,6 +230,276 @@
       </div>
     );
 
+    const CRMPipelineView = () => (
+      <div className="space-y-8">
+        <div className="glass-card rounded-2xl p-6">
+          <h2 className="text-2xl font-bold text-white mb-6">Sales Pipeline Overview</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {pipelineStages.map((pipeline, idx) => (
+              <div key={idx} className={`glass-card rounded-xl p-4 border-l-4 ${pipeline.color.split(' ')[0]} transition-all hover:scale-105`}>
+                <p className="text-sm text-slate-400 mb-2">{pipeline.stage}</p>
+                <h3 className="text-2xl font-bold text-white mb-1">{pipeline.deals}</h3>
+                <p className={`text-sm ${pipeline.color.split(' ')[1]}`}>{pipeline.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="glass-card rounded-2xl p-6">
+          <h3 className="text-xl font-bold text-white mb-4">Active Deals</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-glass-border">
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Deal Name</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Company</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Amount</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Stage</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Probability</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { deal: "Enterprise Platform", company: "TechCorp Inc", amount: "$150K", stage: "Proposal", prob: "75%" },
+                  { deal: "SaaS Migration", company: "CloudNet Ltd", amount: "$85K", stage: "Negotiation", prob: "60%" },
+                  { deal: "API Integration", company: "DataFlow Systems", amount: "$45K", stage: "Qualification", prob: "40%" },
+                  { deal: "Consulting Project", company: "FinTech Global", amount: "$120K", stage: "Closed Won", prob: "100%" }
+                ].map((item, idx) => (
+                  <tr key={idx} className="border-b border-glass-border hover:bg-white/5 transition-all">
+                    <td className="py-3 px-4 text-sm text-white font-medium">{item.deal}</td>
+                    <td className="py-3 px-4 text-sm text-slate-400">{item.company}</td>
+                    <td className="py-3 px-4 text-sm text-white font-semibold">{item.amount}</td>
+                    <td className="py-3 px-4 text-sm"><span className="px-2 py-1 rounded-full bg-indigo-500/20 text-indigo-400">{item.stage}</span></td>
+                    <td className="py-3 px-4 text-sm text-emerald-400 font-medium">{item.prob}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+
+    const OrderListView = () => (
+      <div className="space-y-6">
+        <div className="glass-card rounded-2xl p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-white">Order Management</h2>
+            <button className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition">+ New Order</button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-glass-border">
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Order ID</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Customer</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Amount</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Date</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Status</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {initialTransactions.map((tx) => (
+                  <tr key={tx.id} className="border-b border-glass-border hover:bg-white/5 transition-all">
+                    <td className="py-3 px-4 text-sm font-semibold text-indigo-400">{tx.id}</td>
+                    <td className="py-3 px-4 text-sm text-white">{tx.customer}</td>
+                    <td className="py-3 px-4 text-sm font-semibold text-white">{tx.amount}</td>
+                    <td className="py-3 px-4 text-sm text-slate-400">{tx.date}</td>
+                    <td className="py-3 px-4"><StatusBadge status={tx.status} /></td>
+                    <td className="py-3 px-4"><button className="text-indigo-400 hover:text-indigo-300 text-sm font-medium">View</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+
+    const InvoicesView = () => (
+      <div className="space-y-6">
+        <div className="glass-card rounded-2xl p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-white">Invoices</h2>
+            <button className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition">+ New Invoice</button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="glass-card rounded-xl p-4">
+              <p className="text-xs text-slate-400 mb-1">Total Invoiced</p>
+              <p className="text-2xl font-bold text-white">$182,840</p>
+              <p className="text-xs text-slate-500 mt-2">From 5 invoices</p>
+            </div>
+            <div className="glass-card rounded-xl p-4">
+              <p className="text-xs text-slate-400 mb-1">Paid</p>
+              <p className="text-2xl font-bold text-emerald-400">$167,540</p>
+              <p className="text-xs text-slate-500 mt-2">92% collected</p>
+            </div>
+            <div className="glass-card rounded-xl p-4">
+              <p className="text-xs text-slate-400 mb-1">Overdue</p>
+              <p className="text-2xl font-bold text-rose-400">$8,540</p>
+              <p className="text-xs text-slate-500 mt-2">Pending payment</p>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-glass-border">
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Invoice #</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Client</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Due Date</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Amount</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Status</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-400">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoicesData.map((inv) => (
+                  <tr key={inv.id} className="border-b border-glass-border hover:bg-white/5 transition-all">
+                    <td className="py-3 px-4 text-sm font-semibold text-indigo-400">{inv.id}</td>
+                    <td className="py-3 px-4 text-sm text-white">{inv.client}</td>
+                    <td className="py-3 px-4 text-sm text-slate-400">{inv.due}</td>
+                    <td className="py-3 px-4 text-sm font-semibold text-white">{inv.amount}</td>
+                    <td className="py-3 px-4"><StatusBadge status={inv.status} /></td>
+                    <td className="py-3 px-4"><button className="text-indigo-400 hover:text-indigo-300 text-sm font-medium">Download</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+
+    const SubscriptionsView = () => (
+      <div className="space-y-8">
+        <div className="glass-card rounded-2xl p-6">
+          <h2 className="text-2xl font-bold text-white mb-2">Subscription Plans</h2>
+          <p className="text-slate-400 mb-6">Current subscription revenue across all tiers</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {subscriptionPlans.map((plan) => (
+              <div key={plan.id} className="glass-card rounded-xl p-6 border-l-4 border-indigo-500 hover:scale-105 transition-all">
+                <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
+                <div className="mb-4">
+                  <span className="text-3xl font-bold text-white">{plan.price}</span>
+                  <span className="text-sm text-slate-400 ml-2">/month</span>
+                </div>
+                
+                <div className="mb-6 pb-6 border-b border-glass-border">
+                  <p className="text-sm text-slate-400">{plan.users}</p>
+                </div>
+
+                <div className="space-y-3 mb-6">
+                  {plan.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                      <span className="text-sm text-slate-300">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-6 border-t border-glass-border">
+                  <p className="text-xs text-slate-400 mb-1">Subscribers: {plan.subscribers}</p>
+                  <p className="text-lg font-bold text-emerald-400">{plan.mrr} MRR</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="glass-card rounded-2xl p-6">
+          <h3 className="text-xl font-bold text-white mb-4">Churn Analysis</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="glass-card rounded-xl p-4">
+              <p className="text-sm text-slate-400 mb-2">Monthly Churn Rate</p>
+              <p className="text-2xl font-bold text-white">2.3%</p>
+              <p className="text-xs text-emerald-400 mt-1">↓ 0.5% from last month</p>
+            </div>
+            <div className="glass-card rounded-xl p-4">
+              <p className="text-sm text-slate-400 mb-2">Churned Customers</p>
+              <p className="text-2xl font-bold text-white">12</p>
+              <p className="text-xs text-slate-500 mt-1">This month</p>
+            </div>
+            <div className="glass-card rounded-xl p-4">
+              <p className="text-sm text-slate-400 mb-2">Retention Rate</p>
+              <p className="text-2xl font-bold text-emerald-400">97.7%</p>
+              <p className="text-xs text-slate-500 mt-1">High retention 🎉</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+    const SettingsView = () => (
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="glass-card rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-white mb-4">Account Settings</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm text-slate-400 block mb-2">Email</label>
+                <input type="email" value="admin@pulsecrm.io" className="w-full px-3 py-2 rounded-lg bg-white/10 border border-glass-border text-white focus:outline-none focus:border-indigo-500" />
+              </div>
+              <div>
+                <label className="text-sm text-slate-400 block mb-2">Company Name</label>
+                <input type="text" value="PulseCRM Enterprise" className="w-full px-3 py-2 rounded-lg bg-white/10 border border-glass-border text-white focus:outline-none focus:border-indigo-500" />
+              </div>
+              <button className="w-full px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition">Save Changes</button>
+            </div>
+          </div>
+
+          <div className="glass-card rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-white mb-4">Notification Preferences</h3>
+            <div className="space-y-4">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" defaultChecked className="w-4 h-4 rounded" />
+                <span className="text-sm text-slate-300">Email alerts</span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" defaultChecked className="w-4 h-4 rounded" />
+                <span className="text-sm text-slate-300">Weekly reports</span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" className="w-4 h-4 rounded" />
+                <span className="text-sm text-slate-300">Marketing emails</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="glass-card rounded-2xl p-6">
+            <h3 className="text-lg font-bold text-white mb-4">Integrations</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-white/5">
+                <span className="text-sm text-slate-300">Slack</span>
+                <span className="px-2 py-1 rounded-full text-xs bg-emerald-500/20 text-emerald-400">Connected</span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-white/5">
+                <span className="text-sm text-slate-300">Stripe</span>
+                <span className="px-2 py-1 rounded-full text-xs bg-emerald-500/20 text-emerald-400">Connected</span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-white/5">
+                <span className="text-sm text-slate-300">Zapier</span>
+                <span className="px-2 py-1 rounded-full text-xs bg-amber-500/20 text-amber-400">Not Connected</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="glass-card rounded-2xl p-6">
+          <h3 className="text-lg font-bold text-white mb-4">Security</h3>
+          <div className="space-y-4">
+            <button className="w-full px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium text-left transition">Change Password</button>
+            <button className="w-full px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium text-left transition">Two-Factor Authentication</button>
+            <button className="w-full px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium text-left transition">Active Sessions</button>
+          </div>
+        </div>
+      </div>
+    );
+
     const App = () => {
       const [activeTab, setActiveTab] = useState('Dashboard');
       const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -264,7 +532,7 @@
               </div>
               <div className="flex items-center gap-4">
                 <button className="p-2 rounded-xl hover:bg-white/10 transition-all">
-                  <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                  <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.4-1.9" /></svg>
                 </button>
                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600"></div>
               </div>
@@ -273,11 +541,11 @@
             <div className="flex-1 overflow-auto">
               <div className="p-6 lg:p-8">
                 {activeTab === 'Dashboard' && <DashboardView />}
-                {activeTab === 'CRM Pipeline' && <div className="glass-card p-6 rounded-2xl"><p className="text-center text-slate-400">CRM Pipeline - Coming Soon</p></div>}
-                {activeTab === 'Order List' && <div className="glass-card p-6 rounded-2xl"><p className="text-center text-slate-400">Order List - Coming Soon</p></div>}
-                {activeTab === 'Invoices' && <div className="glass-card p-6 rounded-2xl"><p className="text-center text-slate-400">Invoices - Coming Soon</p></div>}
-                {activeTab === 'Subscriptions' && <div className="glass-card p-6 rounded-2xl"><p className="text-center text-slate-400">Subscriptions - Coming Soon</p></div>}
-                {activeTab === 'Settings' && <div className="glass-card p-6 rounded-2xl"><p className="text-center text-slate-400">Settings - Coming Soon</p></div>}
+                {activeTab === 'CRM Pipeline' && <CRMPipelineView />}
+                {activeTab === 'Order List' && <OrderListView />}
+                {activeTab === 'Invoices' && <InvoicesView />}
+                {activeTab === 'Subscriptions' && <SubscriptionsView />}
+                {activeTab === 'Settings' && <SettingsView />}
               </div>
             </div>
           </div>
