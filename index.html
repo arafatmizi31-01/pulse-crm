@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PulseCRM - Enterprise Sales Intelligence</title>
+  <meta name="description" content="Professional Enterprise Sales and CRM Dashboard for SaaS growth.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236366f1%22 stroke-width=%222.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3%22/></svg>">
+  
+  <!-- Google Fonts (সঠিক করা) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS (সঠিক CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            darkbg: '#030307',
+            cardbg: 'rgba(20, 24, 38, 0.65)',
+            'glass-border': 'rgba(255, 255, 255, 0.08)',
+            'neon-cyan': '#00f3ff',
+            'neon-purple': '#b026ff',
+            accent: '#6366f1',
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body { background-color: #030307; color: #F8FAFC; }
+    .glass-card {
+      background: rgba(20, 24, 38, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .neon-glow {
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4), 0 0 30px rgba(176, 38, 255, 0.2);
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #030307; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    .transition-all { transition: all 0.3s ease; }
+    .sidebar-transition { transition: transform 0.3s ease-in-out; }
+  </style>
+</head>
+<body class="bg-[#030307] text-slate-100 antialiased font-sans overflow-x-hidden">
+  <div id="root"></div>
+
+  <!-- React, ReactDOM, Babel (সঠিক CDN URLs) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useMemo } = React;
+
+    const initialTransactions = [
+      { id: "ORD-9281", customer: "Kris Payer", segment: "Enterprise", amount: "$12,500", date: "May 15, 2024", method: "Stripe", status: "Delivered", category: "Software" },
+      { id: "ORD-9282", customer: "Sarah Connor", segment: "Mid-Market", amount: "$8,540", date: "May 14, 2024", method: "Wire Transfer", status: "On Way", category: "Laptops" },
+      { id: "ORD-9283", customer: "Alex Vance", segment: "SMB", amount: "$4,200", date: "May 14, 2024", method: "Credit Card", status: "Delivered", category: "Retail" },
+      { id: "ORD-9284", customer: "Metro Trading Corp", segment: "Enterprise", amount: "$31,000", date: "May 13, 2024", method: "Wire Transfer", status: "Cancelled", category: "Software" },
+      { id: "ORD-9285", customer: "Apex Solutions", segment: "Mid-Market", amount: "$6,800", date: "May 12, 2024", method: "Stripe", status: "Delivered", category: "Software" },
+      { id: "ORD-9286", customer: "Nexus Hardware", segment: "SMB", amount: "$3,100", date: "May 11, 2024", method: "PayPal", status: "On Way", category: "Laptops" }
+    ];
+
+    const monthlySales = [
+      { month: "Jan", val: 45 }, { month: "Feb", val: 58 }, { month: "Mar", val: 72 },
+      { month: "Apr", val: 65 }, { month: "May", val: 88 }, { month: "Jun", val: 95 }
+    ];
+
+    const invoicesData = [
+      { id: "INV-2024-001", client: "Kris Payer", due: "May 20, 2024", amount: "$12,500", method: "Stripe", status: "Paid" },
+      { id: "INV-2024-002", client: "Sarah Connor", due: "May 25, 2024", amount: "$8,540", method: "Wire Transfer", status: "Overdue" },
+      { id: "INV-2024-003", client: "Alex Vance", due: "May 18, 2024", amount: "$4,200", method: "Credit Card", status: "Paid" }
+    ];
+
+    const NeonButton = ({ children, onClick, className = "" }) => (
+      <button onClick={onClick} className={`px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition-all ${className}`}>
+        {children}
+      </button>
+    );
+
+    const StatusBadge = ({ status }) => {
+      const base = "px-2.5 py-1 rounded-full text-xs font-medium border";
+      if (status === "Delivered" || status === "Paid") return <span className={`${base} bg-emerald-500/10 text-emerald-400 border-emerald-500/20`}>{status}</span>;
+      if (status === "On Way") return <span className={`${base} bg-amber-500/10 text-amber-400 border-amber-500/20`}>{status}</span>;
+      if (status === "Cancelled" || status === "Overdue") return <span className={`${base} bg-rose-500/10 text-rose-400 border-rose-500/20`}>{status}</span>;
+      return <span className={base}>{status}</span>;
+    };
+
+    const SidebarContent = ({ activeTab, setActiveTab, onClose }) => {
+      const navItems = [
+        { id: 'Dashboard', label: 'Dashboard' },
+        { id: 'CRM Pipeline', label: 'CRM Pipeline' },
+        { id: 'Order List', label: 'Order List' },
+        { id: 'Invoices', label: 'Invoices' },
+        { id: 'Subscriptions', label: 'Subscriptions' },
+        { id: 'Settings', label: 'Settings' }
+      ];
+      return (
+        <div className="flex flex-col h-full bg-[#030307] text-white">
+          <div className="p-5 flex items-center justify-between border-b border-glass-border">
+            <div className="flex items-center gap-3">
+              <svg viewBox="0 0 24 24" className="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" /></svg>
+              <span className="text-xl font-bold">PulseCRM</span>
+            </div>
+            {onClose && (
+              <button onClick={onClose} className="lg:hidden text-slate-400 hover:text-white">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            )}
+          </div>
+          <nav className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
+            {navItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => { setActiveTab(item.id); if(onClose) onClose(); }}
+                className={`flex items-center w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === item.id ? 'bg-gradient-to-r from-[rgba(0,243,255,0.15)] to-[rgba(176,38,255,0.15)] text-white border border-white/10' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+          <div className="p-4 border-t border-glass-border">
+            <button className="flex items-center w-full px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+              <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      );
+    };
+
+    const DashboardView = ({ tooltip, setTooltip }) => (
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-indigo-500/50 transition-all">
+            <div className="flex justify-between items-start">
+              <div><p className="text-xs uppercase tracking-wider font-semibold text-slate-400">MRR</p><h3 className="text-2xl font-bold text-white mt-1.5">$99,560</h3></div>
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">+2.6%</span>
+            </div>
+            <p className="text-xs text-slate-400 mt-4">vs last month</p>
+          </div>
+          <div className="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-indigo-500/50 transition-all">
+            <div className="flex justify-between items-start">
+              <div><p className="text-xs uppercase tracking-wider font-semibold text-slate-400">ARR</p><h3 className="text-2xl font-bold text-white mt-1.5">$1.2M</h3></div>
+              <div className="w-16 h-8 flex items-end">
+                <svg className="w-full h-full text-indigo-400" viewBox="0 0 60 25" fill="none"><path d="M2 22 Q 15 10, 30 15 T 58 3" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
+              </div>
+            </div>
+            <p className="text-xs text-slate-400 mt-4">Annualized Run Rate</p>
+          </div>
+          <div className="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-indigo-500/50 transition-all">
+            <div className="flex justify-between items-start">
+              <div><p className="text-xs uppercase tracking-wider font-semibold text-slate-400">Active Customers</p><h3 className="text-2xl font-bold text-white mt-1.5">45,600</h3></div>
+              <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM15 20H9" /></svg>
+              </div>
+            </div>
+            <p className="text-xs text-slate-400 mt-4">Total customer base</p>
+          </div>
+          <div className="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-indigo-500/50 transition-all">
+            <div className="flex justify-between items-start">
+              <div><p className="text-xs uppercase tracking-wider font-semibold text-slate-400">Conversion Rate</p><h3 className="text-2xl font-bold text-white mt-1.5">24.5%</h3></div>
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">+1.2%</span>
+            </div>
+            <p className="text-xs text-slate-400 mt-4">vs last month</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div className="lg:col-span-2 glass-card rounded-2xl p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-white mb-4">Recent Transactions</h3>
+            <div className="space-y-3">
+              {initialTransactions.slice(0, 4).map(tx => (
+                <div key={tx.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white">{tx.customer}</p>
+                    <p className="text-xs text-slate-400">{tx.id}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-white">{tx.amount}</p>
+                    <StatusBadge status={tx.status} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="glass-card rounded-2xl p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-white mb-4">Pipeline Status</h3>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between mb-2">
+                  <p className="text-sm text-slate-400">Qualified Leads</p>
+                  <p className="text-sm font-medium text-white">68%</p>
+                </div>
+                <div className="w-full bg-white/10 rounded-full h-2">
+                  <div className="bg-indigo-500 h-2 rounded-full" style={{width: '68%'}}></div>
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between mb-2">
+                  <p className="text-sm text-slate-400">In Negotiation</p>
+                  <p className="text-sm font-medium text-white">45%</p>
+                </div>
+                <div className="w-full bg-white/10 rounded-full h-2">
+                  <div className="bg-amber-500 h-2 rounded-full" style={{width: '45%'}}></div>
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between mb-2">
+                  <p className="text-sm text-slate-400">Closing Soon</p>
+                  <p className="text-sm font-medium text-white">92%</p>
+                </div>
+                <div className="w-full bg-white/10 rounded-full h-2">
+                  <div className="bg-emerald-500 h-2 rounded-full" style={{width: '92%'}}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+    const App = () => {
+      const [activeTab, setActiveTab] = useState('Dashboard');
+      const [sidebarOpen, setSidebarOpen] = useState(false);
+
+      return (
+        <div className="flex h-screen bg-[#030307] text-white">
+          {/* Desktop Sidebar */}
+          <div className="hidden lg:flex w-64 border-r border-glass-border">
+            <SidebarContent activeTab={activeTab} setActiveTab={setActiveTab} />
+          </div>
+
+          {/* Mobile Sidebar */}
+          {sidebarOpen && (
+            <div className="fixed inset-0 z-40 lg:hidden">
+              <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)}></div>
+              <div className="absolute left-0 top-0 bottom-0 w-64 border-r border-glass-border z-50">
+                <SidebarContent activeTab={activeTab} setActiveTab={setActiveTab} onClose={() => setSidebarOpen(false)} />
+              </div>
+            </div>
+          )}
+
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col">
+            <div className="h-16 border-b border-glass-border flex items-center px-6 justify-between">
+              <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden text-slate-400 hover:text-white">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+              </button>
+              <div className="flex-1 lg:flex hidden items-center">
+                <h2 className="text-xl font-bold">{activeTab}</h2>
+              </div>
+              <div className="flex items-center gap-4">
+                <button className="p-2 rounded-xl hover:bg-white/10 transition-all">
+                  <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                </button>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-auto">
+              <div className="p-6 lg:p-8">
+                {activeTab === 'Dashboard' && <DashboardView />}
+                {activeTab === 'CRM Pipeline' && <div className="glass-card p-6 rounded-2xl"><p className="text-center text-slate-400">CRM Pipeline - Coming Soon</p></div>}
+                {activeTab === 'Order List' && <div className="glass-card p-6 rounded-2xl"><p className="text-center text-slate-400">Order List - Coming Soon</p></div>}
+                {activeTab === 'Invoices' && <div className="glass-card p-6 rounded-2xl"><p className="text-center text-slate-400">Invoices - Coming Soon</p></div>}
+                {activeTab === 'Subscriptions' && <div className="glass-card p-6 rounded-2xl"><p className="text-center text-slate-400">Subscriptions - Coming Soon</p></div>}
+                {activeTab === 'Settings' && <div className="glass-card p-6 rounded-2xl"><p className="text-center text-slate-400">Settings - Coming Soon</p></div>}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
