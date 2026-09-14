@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeatherFlow - Real-time Weather Dashboard</title>
+  <meta name="description" content="Real-time weather dashboard with forecasts.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%233b82f6%22 stroke-width=%222.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><circle cx=%2212%22 cy=%2712%22 r=%275%27/><line x1=%2712%27 y1=%271%27 x2=%2712%27 y2=%273%27 stroke=%22currentColor%22 stroke-width=%222%22/><line x1=%2712%27 y1=%2721%27 x2=%2712%27 y2=%2723%27 stroke=%22currentColor%22 stroke-width=%222%22/><line x1=%274.22%27 y1=%274.22%27 x2=%275.64%27 y2=%275.64%27 stroke=%22currentColor%22 stroke-width=%222%22/><line x1=%2718.36%27 y1=%2718.36%27 x2=%2719.78%27 y2=%2719.78%27 stroke=%22currentColor%22 stroke-width=%222%22/><line x1=%271%27 y1=%2712%27 x2=%273%27 y2=%2712%27 stroke=%22currentColor%22 stroke-width=%222%22/><line x1=%2721%27 y1=%2712%27 x2=%2723%27 y2=%2712%27 stroke=%22currentColor%22 stroke-width=%222%22/></svg>">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'weather-bg': '#0f172a',
+            'weather-card': 'rgba(15, 23, 42, 0.8)',
+            'glass-border': 'rgba(255, 255, 255, 0.1)',
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body { background-color: #0f172a; color: #e2e8f0; }
+    .weather-card {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .weather-gradient-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .loading-spinner {
+      border: 3px solid rgba(59, 130, 246, 0.2);
+      border-top: 3px solid #3b82f6;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="bg-weather-bg text-slate-100 antialiased font-sans">
+  <div id="root"></div>
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const WeatherDashboard = () => {
+      const [city, setCity] = useState("London");
+      const [weatherData, setWeatherData] = useState(null);
+      const [forecastData, setForecastData] = useState(null);
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState(null);
+      const [unit, setUnit] = useState("metric");
+
+      // Mock weather data for demo
+      const mockWeatherData = {
+        "London": {
+          name: "London",
+          country: "GB",
+          temp: 18,
+          feels_like: 16,
+          humidity: 72,
+          wind_speed: 5.2,
+          pressure: 1013,
+          visibility: 10,
+          clouds: 45,
+          condition: "Partly Cloudy",
+          sunrise: "06:45",
+          sunset: "20:15"
+        },
+        "Tokyo": {
+          name: "Tokyo",
+          country: "JP",
+          temp: 25,
+          feels_like: 24,
+          humidity: 68,
+          wind_speed: 3.8,
+          pressure: 1015,
+          visibility: 8,
+          clouds: 30,
+          condition: "Clear",
+          sunrise: "05:30",
+          sunset: "19:00"
+        },
+        "New York": {
+          name: "New York",
+          country: "US",
+          temp: 22,
+          feels_like: 20,
+          humidity: 65,
+          wind_speed: 6.1,
+          pressure: 1012,
+          visibility: 9,
+          clouds: 50,
+          condition: "Cloudy",
+          sunrise: "06:15",
+          sunset: "20:30"
+        },
+        "Paris": {
+          name: "Paris",
+          country: "FR",
+          temp: 19,
+          feels_like: 17,
+          humidity: 70,
+          wind_speed: 4.5,
+          pressure: 1014,
+          visibility: 10,
+          clouds: 40,
+          condition: "Partly Cloudy",
+          sunrise: "06:50",
+          sunset: "20:20"
+        },
+        "Dubai": {
+          name: "Dubai",
+          country: "AE",
+          temp: 38,
+          feels_like: 42,
+          humidity: 35,
+          wind_speed: 8.2,
+          pressure: 1005,
+          visibility: 6,
+          clouds: 15,
+          condition: "Sunny",
+          sunrise: "05:45",
+          sunset: "19:30"
+        }
+      };
+
+      const mockForecast = [
+        { date: "Sep 15", temp: 20, condition: "Partly Cloudy", humidity: 70 },
+        { date: "Sep 16", temp: 19, condition: "Rainy", humidity: 85 },
+        { date: "Sep 17", temp: 21, condition: "Clear", humidity: 60 },
+        { date: "Sep 18", temp: 18, condition: "Cloudy", humidity: 75 },
+        { date: "Sep 19", temp: 22, condition: "Sunny", humidity: 55 }
+      ];
+
+      const fetchWeather = async (cityName) => {
+        setLoading(true);
+        setError(null);
+        
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        const cityKey = Object.keys(mockWeatherData).find(
+          key => key.toLowerCase() === cityName.toLowerCase()
+        );
+        
+        if (cityKey) {
+          setWeatherData(mockWeatherData[cityKey]);
+          setForecastData(mockForecast);
+        } else {
+          setError("City not found - Try: London, Tokyo, New York, Paris, or Dubai");
+          setWeatherData(null);
+          setForecastData(null);
+        }
+        
+        setLoading(false);
+      };
+
+      useEffect(() => {
+        fetchWeather(city);
+      }, []);
+
+      const handleSearch = (e) => {
+        e.preventDefault();
+        if (city.trim()) {
+          fetchWeather(city);
+        }
+      };
+
+      const getWeatherIcon = (condition) => {
+        const icons = {
+          "Clear": "☀️",
+          "Sunny": "🌞",
+          "Partly Cloudy": "⛅",
+          "Cloudy": "☁️",
+          "Rainy": "🌧️",
+          "Thunderstorm": "⛈️",
+          "Snow": "❄️",
+          "Mist": "🌫️"
+        };
+        return icons[condition] || "🌤️";
+      };
+
+      return (
+        <div className="min-h-screen bg-weather-bg p-4 md:p-8">
+          <div className="max-w-6xl mx-auto">
+            {/* Header */}
+            <div className="mb-8">
+              <h1 className="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">WeatherFlow</h1>
+              <p className="text-slate-400">Real-time weather forecasts at your fingertips</p>
+            </div>
+
+            {/* Search Bar */}
+            <div className="mb-8">
+              <form onSubmit={handleSearch} className="flex gap-3 mb-4 flex-col sm:flex-row">
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="Enter city name..."
+                  className="flex-1 px-4 py-3 rounded-lg bg-slate-800 text-white placeholder-slate-400 border border-slate-700 focus:border-blue-500 focus:outline-none transition"
+                />
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition"
+                >
+                  Search
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUnit(unit === "metric" ? "imperial" : "metric")}
+                  className="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition"
+                  title={unit === "metric" ? "Switch to °F" : "Switch to °C"}
+                >
+                  {unit === "metric" ? "°C" : "°F"}
+                </button>
+              </form>
+              <p className="text-xs text-slate-500">💡 Try: London, Tokyo, New York, Paris, Dubai</p>
+            </div>
+
+            {/* Loading State */}
+            {loading && (
+              <div className="flex justify-center items-center py-20">
+                <div className="loading-spinner"></div>
+              </div>
+            )}
+
+            {/* Error State */}
+            {error && (
+              <div className="bg-red-900/20 border border-red-500/50 rounded-lg p-4 mb-8 text-red-400">
+                ❌ {error}
+              </div>
+            )}
+
+            {/* Current Weather */}
+            {weatherData && !loading && (
+              <>
+                <div className="weather-card rounded-2xl p-8 mb-8">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+                    <div className="flex-1">
+                      <h2 className="text-3xl font-bold mb-2">{weatherData.name}, {weatherData.country}</h2>
+                      <p className="text-slate-400 mb-4">{weatherData.condition}</p>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-6xl font-bold">{weatherData.temp}°</span>
+                        <span className="text-2xl text-slate-400">{unit === "metric" ? "C" : "F"}</span>
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-6xl mb-2">{getWeatherIcon(weatherData.condition)}</div>
+                      <p className="text-slate-400">{weatherData.condition}</p>
+                    </div>
+                  </div>
+
+                  {/* Weather Details Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-glass-border">
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1">Feels Like</p>
+                      <p className="text-xl font-semibold">{weatherData.feels_like}°</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1">Humidity</p>
+                      <p className="text-xl font-semibold">{weatherData.humidity}%</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1">Wind Speed</p>
+                      <p className="text-xl font-semibold">{weatherData.wind_speed} m/s</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1">Pressure</p>
+                      <p className="text-xl font-semibold">{weatherData.pressure} mb</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1">Visibility</p>
+                      <p className="text-xl font-semibold">{weatherData.visibility} km</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1">Clouds</p>
+                      <p className="text-xl font-semibold">{weatherData.clouds}%</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1">Sunrise</p>
+                      <p className="text-xl font-semibold">{weatherData.sunrise}</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1">Sunset</p>
+                      <p className="text-xl font-semibold">{weatherData.sunset}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5 Day Forecast */}
+                {forecastData && (
+                  <div>
+                    <h3 className="text-2xl font-bold mb-4">5-Day Forecast</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                      {forecastData.map((day, index) => (
+                        <div key={index} className="weather-card rounded-xl p-4 text-center hover:border-blue-400 transition">
+                          <p className="text-slate-400 text-sm mb-3 font-medium">{day.date}</p>
+                          <div className="text-4xl mb-3 text-center">{getWeatherIcon(day.condition)}</div>
+                          <p className="font-semibold mb-2">{day.temp}°</p>
+                          <p className="text-xs text-slate-400">{day.condition}</p>
+                          <p className="text-xs text-slate-500 mt-2">💧 {day.humidity}%</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Initial State */}
+            {!weatherData && !loading && !error && (
+              <div className="text-center py-20">
+                <div className="text-6xl mb-4">🌍</div>
+                <p className="text-slate-400 text-lg">Search for a city to get started</p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<WeatherDashboard />);
+  </script>
+</body>
+</html>
